@@ -8,8 +8,6 @@ import {
   ChevronDown,
   Globe,
   ShieldCheck,
-  Phone,
-  Mail,
   Facebook,
   Youtube,
   Linkedin,
@@ -58,10 +56,8 @@ export default function Navbar() {
     setLogoSrc(resolveMediaUrl(settings?.logo_url?.trim() || '') || DEFAULT_LOGO)
   }, [settings?.logo_url])
 
-  const navBg =
-    !isHome || scrolled
-      ? 'bg-dark/95 backdrop-blur-md shadow-lg shadow-black/25'
-      : 'bg-transparent'
+  const navBg = 'bg-white'
+  const navText = 'nav-link-dark'
 
   const dropdowns = useMemo(
     () => ({
@@ -107,136 +103,110 @@ export default function Navbar() {
     (dropdowns[key] || []).some((it) => isActiveQueryLink(it.href))
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navBg}`}>
-      {/* Top bar */}
-      <div className="border-b border-white/10 py-1.5 px-4 hidden md:block">
-        <div className="max-w-7xl mx-auto flex justify-between items-center text-xs text-gray-400">
-          <div className="flex gap-4 items-center">
-            <span className="flex items-center gap-1">
-              <Phone size={14} className="text-primary" />
-              <span dir="ltr">{settings?.contact_phone || ''}</span>
-            </span>
-            <span className="flex items-center gap-1">
-              <Mail size={14} className="text-primary" />
-              <span dir="ltr">{settings?.contact_email || ''}</span>
-            </span>
-          </div>
-
-          <div className="flex gap-3 items-center">
-            {settings?.social_facebook && (
-              <a href={settings.social_facebook} target="_blank" rel="noreferrer" className="hover:text-primary transition-colors" aria-label="Facebook">
-                <Facebook size={16} />
-              </a>
-            )}
-            {settings?.social_youtube && (
-              <a href={settings.social_youtube} target="_blank" rel="noreferrer" className="hover:text-primary transition-colors" aria-label="YouTube">
-                <Youtube size={16} />
-              </a>
-            )}
-            {settings?.social_linkedin && (
-              <a href={settings.social_linkedin} target="_blank" rel="noreferrer" className="hover:text-primary transition-colors" aria-label="LinkedIn">
-                <Linkedin size={16} />
-              </a>
-            )}
-            {settings?.social_x && (
-              <a href={settings.social_x} target="_blank" rel="noreferrer" className="hover:text-primary transition-colors" aria-label="X">
-                <XIcon size={16} />
-              </a>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Main nav */}
-      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3 flex-shrink-0">
-          <img
-            src={logoSrc}
-            alt={settings?.site_name_en || settings?.site_name_ar || 'Yemen Heritage for Peace'}
-            className="h-11 w-auto drop-shadow-md"
-            onError={(e) => {
-              if (e.currentTarget.src !== window.location.origin + DEFAULT_LOGO) {
-                setLogoSrc(DEFAULT_LOGO)
-              }
-            }}
-          />
-          <div className="hidden sm:block">
-            <div className="text-white font-bold text-sm leading-tight">
-              {settings?.site_name_ar || 'منظمة تراث اليمن'}
+    <>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navBg}`}>
+        {/* Top bar */}
+        <div className="bg-primary py-2 px-4 hidden md:block">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <img src="/logowhite.png" alt={settings?.site_name_en || settings?.site_name_ar || 'logo'} className="h-10 w-auto" />
+              <div className="flex flex-col text-white leading-tight">
+                <span className="font-semibold text-sm">منظمة تراث اليمن لأجل السلام</span>
+                <span className="text-[11px] text-white/80">Yemen Heritage for Peace Organization</span>
+              </div>
             </div>
-            <div className="text-primary text-xs">
-              {settings?.site_name_en || 'Yemen Heritage for Peace'}
+
+            <div className="flex items-center gap-2">
+              <a href={settings?.social_facebook || '#'} target="_blank" rel="noreferrer" aria-label="Facebook"
+                className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-primary shadow-sm">
+                <Facebook size={18} />
+              </a>
+              <a href={settings?.social_youtube || '#'} target="_blank" rel="noreferrer" aria-label="YouTube"
+                className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-primary shadow-sm">
+                <Youtube size={18} />
+              </a>
+              <a href={settings?.social_linkedin || '#'} target="_blank" rel="noreferrer" aria-label="LinkedIn"
+                className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-primary shadow-sm">
+                <Linkedin size={18} />
+              </a>
+              <a href={settings?.social_x || '#'} target="_blank" rel="noreferrer" aria-label="X"
+                className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-primary shadow-sm">
+                <XIcon size={18} />
+              </a>
             </div>
           </div>
-        </Link>
-
-        {/* Desktop nav */}
-        <div className="hidden xl:flex items-center gap-3" style={{ direction: dir }}>
-          <NavLink to="/" end className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-            {t.nav.home}
-          </NavLink>
-
-          <NavLink to="/about" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-            {t.nav.about}
-          </NavLink>
-
-          <NavLink to="/news" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-            {t.nav.news}
-          </NavLink>
-
-          <DropMenu
-            label={t.nav.activities}
-            items={dropdowns.activities}
-            open={openDrop === 'activities'}
-            onToggle={() => setOpenDrop((o) => (o === 'activities' ? null : 'activities'))}
-            active={dropdownActive('activities')}
-          />
-
-          <DropMenu
-            label={t.nav.fields}
-            items={dropdowns.fields}
-            open={openDrop === 'fields'}
-            onToggle={() => setOpenDrop((o) => (o === 'fields' ? null : 'fields'))}
-            active={dropdownActive('fields')}
-          />
-
-          <DropMenu
-            label={t.nav.heritage_life}
-            items={dropdowns.heritage_life}
-            open={openDrop === 'heritage_life'}
-            onToggle={() => setOpenDrop((o) => (o === 'heritage_life' ? null : 'heritage_life'))}
-            active={dropdownActive('heritage_life')}
-          />
-
-          <NavLink to="/contact" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-            {t.nav.contact}
-          </NavLink>
         </div>
 
-        <div className="hidden xl:flex items-center gap-2">
-          <button
-            onClick={toggleLang}
-            className="flex items-center gap-1.5 text-white/90 hover:text-primary transition-colors text-sm py-1.5 px-3 rounded-lg border border-white/20 hover:border-primary/50"
-          >
-            <Globe size={14} />
-            <span>{t.nav.lang}</span>
-          </button>
-
-          <button
-            onClick={() => navigate('/admin/login')}
-            className="flex items-center gap-1.5 text-white/90 hover:text-primary transition-colors text-sm py-1.5 px-3 rounded-lg border border-white/20 hover:border-primary/50"
-          >
-            <ShieldCheck size={14} />
-            <span>{t.nav.admin}</span>
-          </button>
+        {/* Main nav */}
+        <div className="bg-white border-b border-gray-200 shadow-sm">
+          <div className="w-full px-4 py-3">
+            <div className="w-full flex flex-wrap items-center justify-between gap-3 bg-white rounded-[999px] border border-gray-200 px-4 py-2 shadow-sm">
+              <div className="flex flex-wrap items-center justify-center gap-3 flex-1 min-w-[260px]">
+                <NavLink to="/" end className={({ isActive }) => `${navText} ${isActive ? 'active' : ''}`}>
+                  {t.nav.home}
+                </NavLink>
+                <NavLink to="/about" className={({ isActive }) => `${navText} ${isActive ? 'active' : ''}`}>
+                  {t.nav.about}
+                </NavLink>
+                <NavLink to="/news" className={({ isActive }) => `${navText} ${isActive ? 'active' : ''}`}>
+                  {t.nav.news}
+                </NavLink>
+                <DropMenu
+                  label={t.nav.activities}
+                  items={dropdowns.activities}
+                  open={openDrop === 'activities'}
+                  onToggle={() => setOpenDrop((o) => (o === 'activities' ? null : 'activities'))}
+                  active={dropdownActive('activities')}
+                  navText={navText}
+                />
+                <DropMenu
+                  label={t.nav.fields}
+                  items={dropdowns.fields}
+                  open={openDrop === 'fields'}
+                  onToggle={() => setOpenDrop((o) => (o === 'fields' ? null : 'fields'))}
+                  active={dropdownActive('fields')}
+                  navText={navText}
+                />
+                <DropMenu
+                  label={t.nav.heritage_life}
+                  items={dropdowns.heritage_life}
+                  open={openDrop === 'heritage_life'}
+                  onToggle={() => setOpenDrop((o) => (o === 'heritage_life' ? null : 'heritage_life'))}
+                  active={dropdownActive('heritage_life')}
+                  navText={navText}
+                />
+                <NavLink to="/contact" className={({ isActive }) => `${navText} ${isActive ? 'active' : ''}`}>
+                  {t.nav.contact}
+                </NavLink>
+              </div>
+              <div className="hidden md:flex items-center gap-2">
+                <button
+                  onClick={toggleLang}
+                  className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-2 text-sm text-dark hover:border-primary transition"
+                >
+                  <Globe size={16} />
+                  {t.nav.lang}
+                </button>
+                <button
+                  onClick={() => navigate('/admin/login')}
+                  className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-2 text-sm text-dark hover:border-primary transition"
+                >
+                  <ShieldCheck size={16} />
+                  {t.nav.admin}
+                </button>
+              </div>
+            </div>
+            <div className="mt-2 flex justify-between md:hidden">
+              <button className="text-dark p-2" onClick={() => setMobileOpen((o) => !o)}>
+                {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </div>
+          </div>
         </div>
 
-        <button className="xl:hidden text-white p-2" onClick={() => setMobileOpen((o) => !o)}>
-          {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
-
-      {/* Mobile */}
+        {/* Mobile */}
+      </nav>
+      <div className="h-[68px] md:h-[96px]" aria-hidden="true" />
       {mobileOpen && (
         <div className="xl:hidden bg-dark/98 backdrop-blur-md border-t border-white/10 px-4 pb-4 max-h-[80vh] overflow-y-auto">
           {[
@@ -261,20 +231,22 @@ export default function Navbar() {
           ))}
 
           <div className="flex gap-3 mt-4">
-            <button onClick={toggleLang} className="flex-1 btn-outline py-2 text-sm justify-center">
+            <button onClick={toggleLang} className="flex-1 btn-outline py-2 text-sm justify-center inline-flex items-center gap-2">
+              <Globe size={16} />
               {t.nav.lang}
             </button>
-            <button onClick={() => navigate('/admin/login')} className="flex-1 btn-primary py-2 text-sm justify-center">
+            <button onClick={() => navigate('/admin/login')} className="flex-1 btn-primary py-2 text-sm justify-center inline-flex items-center gap-2">
+              <ShieldCheck size={16} />
               {t.nav.admin}
             </button>
           </div>
         </div>
       )}
-    </nav>
+    </>
   )
 }
 
-function DropMenu({ label, items, open, onToggle, active }) {
+function DropMenu({ label, items, open, onToggle, active, navText = '' }) {
   const ref = useRef()
 
   useEffect(() => {
@@ -289,7 +261,7 @@ function DropMenu({ label, items, open, onToggle, active }) {
     <div className="relative" ref={ref}>
       <button
         onClick={onToggle}
-        className={`nav-link ${active ? 'active' : ''} flex items-center gap-1`}
+        className={`nav-link ${active ? 'active' : ''} flex items-center gap-1 ${navText}`}
       >
         {label}
         <ChevronDown size={14} className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />

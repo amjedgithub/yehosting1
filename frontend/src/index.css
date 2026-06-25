@@ -77,6 +77,27 @@ select {
   @apply text-primary;
 }
 
+.nav-link-dark {
+  @apply relative text-dark font-medium transition-all duration-300 py-2 px-3;
+}
+
+.nav-link-dark::after {
+  content: '';
+  @apply absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300;
+}
+
+.nav-link-dark:hover::after {
+  @apply w-full;
+}
+
+.nav-link-dark:hover {
+  @apply text-primary;
+}
+
+.nav-link-dark.active {
+  @apply text-primary;
+}
+
 .nav-link.active::after {
   @apply w-full;
 }
@@ -151,6 +172,14 @@ select {
   left: 0;
 }
 
+.admin-sidebar.mobile-hidden {
+  @apply -translate-x-full opacity-0 pointer-events-none;
+}
+
+[dir="rtl"] .admin-sidebar.mobile-hidden {
+  @apply translate-x-full;
+}
+
 .admin-content {
   @apply min-h-screen bg-gray-50 p-6;
 }
@@ -164,7 +193,16 @@ select {
 }
 
 @media (max-width: 1024px) {
+  .admin-sidebar {
+    @apply w-72 shadow-2xl;
+  }
+
+  .admin-sidebar:not(.mobile-hidden) {
+    @apply fixed inset-y-0 z-50;
+  }
+
   .admin-content {
+    @apply m-0 p-4;
     margin-left: 0 !important;
     margin-right: 0 !important;
   }

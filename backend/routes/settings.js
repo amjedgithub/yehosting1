@@ -10,6 +10,13 @@ const router = require('express').Router()
 const db     = require('../lib/db')
 const auth   = require('../middleware/auth')
 
+function superAdminOnly(req, res, next) {
+  if (req.admin.role !== 'super_admin') {
+    return res.status(403).json({ error: 'هذه العملية متاحة للمشرف الرئيسي فقط' })
+  }
+  next()
+}
+
 async function ensureRow() {
   await db.query(`INSERT INTO site_settings (id) VALUES (1) ON DUPLICATE KEY UPDATE id = id`)
 }
@@ -23,8 +30,8 @@ router.get('/', async (req, res) => {
   } catch { res.status(500).json({ error: 'خطأ في الخادم' }) }
 })
 
-// PUT /api/settings  (admin)
-router.put('/', auth, async (req, res) => {
+// PUT /api/settings  (super_admin only)
+router.put('/', auth, superAdminOnly, async (req, res) => {
   try {
     await ensureRow()
     const {

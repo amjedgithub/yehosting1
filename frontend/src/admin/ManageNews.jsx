@@ -74,7 +74,7 @@ export default function ManageNews() {
   }, [items, searchTerm, statusFilter])
 
   const openAdd = () => {
-    setForm(EMPTY)
+    setForm({ ...EMPTY, created_at: new Date().toISOString().split('T')[0] })
     setEditId(null)
     setModal('form')
   }
@@ -108,9 +108,9 @@ export default function ManageNews() {
         published: !!form.published,
       }
 
-      if (!editId) {
-        delete payload.created_at
-      }
+        if (payload.created_at === '') {
+          payload.created_at = null
+        }
 
       if (editId) {
         await api.put(`/news/${editId}`, payload)
@@ -381,19 +381,17 @@ export default function ManageNews() {
                 </div>
               </div>
 
-              {editId && (
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
-                    {t.date}
-                  </label>
-                  <input
-                    type="date"
-                    value={form.created_at}
-                    onChange={(e) => setForm({ ...form, created_at: e.target.value })}
-                    className="input-field"
-                  />
-                </div>
-              )}
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">
+                  {t.date}
+                </label>
+                <input
+                  type="date"
+                  value={form.created_at}
+                  onChange={(e) => setForm({ ...form, created_at: e.target.value })}
+                  className="input-field"
+                />
+              </div>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>

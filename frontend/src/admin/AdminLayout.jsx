@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom'
+import { Outlet, Link, useNavigate, useLocation, Navigate } from 'react-router-dom'
 
 import toast from 'react-hot-toast'
 import {
@@ -102,7 +102,8 @@ function ConfirmModal({ modal, close, isRtl }) {
 
 export default function AdminLayout() {
   const [admin, setAdmin] = useState(null)
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(() => (typeof window !== 'undefined' ? window.innerWidth >= 1024 : true))
+  const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 1024 : false))
   const [adminLang, setAdminLang] = useState(localStorage.getItem('admin_lang') || 'ar')
   const [unreadCount, setUnreadCount] = useState(0)
   const [confirmModal, setConfirmModal] = useState({
@@ -167,6 +168,20 @@ export default function AdminLayout() {
   }, [])
 
   useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 1024
+      setIsMobile(mobile)
+      if (mobile) {
+        setSidebarOpen(false)
+      }
+    }
+
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  useEffect(() => {
     const token = localStorage.getItem('yhpo_token')
     const stored = localStorage.getItem('yhpo_admin')
     if (!token) {
@@ -204,18 +219,30 @@ export default function AdminLayout() {
 
   const isSuperAdmin = admin?.role === 'super_admin'
 
-  const navItems = [
-    { href:'/admin',           icon:LayoutDashboard, label:t.dashboard },
-    { href:'/admin/news',      icon:Newspaper,       label:t.news },
-    { href:'/admin/events',    icon:Calendar,        label:t.events },
-    { href:'/admin/heritage',  icon:Mountain,        label:t.heritage },
-    { href:'/admin/partners',  icon:Handshake,       label:t.partners },
-    { href:'/admin/hero',      icon:Images,          label:t.heroSlides },
-    { href:'/admin/settings',  icon:Settings,        label:t.siteSettings },
-    { href:'/admin/messages',  icon:MessageSquare,   label:t.messages, badge: unreadCount },
-    ...(isSuperAdmin ? [{ href:'/admin/admins', icon:Users, label:t.admins }] : []),
-    { href:'/admin/profile',   icon:User,            label:t.profile },
+  const commonNavItems = [
+    { href: '/admin', icon: LayoutDashboard, label: t.dashboard },
+    { href: '/admin/news', icon: Newspaper, label: t.news },
+    { href: '/admin/events', icon: Calendar, label: t.events },
+    { href: '/admin/profile', icon: User, label: t.profile },
   ]
+  const superAdminNavItems = [
+    { href: '/admin/heritage', icon: Mountain, label: t.heritage },
+    { href: '/admin/partners', icon: Handshake, label: t.partners },
+    { href: '/admin/hero', icon: Images, label: t.heroSlides },
+    { href: '/admin/settings', icon: Settings, label: t.siteSettings },
+    { href: '/admin/messages', icon: MessageSquare, label: t.messages, badge: unreadCount },
+    { href: '/admin/admins', icon: Users, label: t.admins },
+  ]
+
+  const navItems = isSuperAdmin ? [...commonNavItems, ...superAdminNavItems] : commonNavItems
+
+  const allowedAdminPaths = isSuperAdmin
+    ? ['/admin', '/admin/news', '/admin/events', '/admin/heritage', '/admin/partners', '/admin/hero', '/admin/settings', '/admin/messages', '/admin/admins', '/admin/profile']
+    : ['/admin', '/admin/news', '/admin/events', '/admin/profile']
+
+  if (admin && !allowedAdminPaths.includes(location.pathname) && location.pathname.startsWith('/admin')) {
+    return <Navigate to="/admin" replace />
+  }
 
   const contextValue = { t, lang: adminLang, isRtl, toggleAdminLang, fetchUnread, requestConfirm }
 
@@ -225,7 +252,7 @@ export default function AdminLayout() {
         <div className={`min-h-screen bg-gray-50 ${isRtl ? 'font-ar' : 'font-en'}`} dir={isRtl ? 'rtl' : 'ltr'}>
           <ConfirmModal modal={confirmModal} close={closeConfirm} isRtl={isRtl} />
 
-          <aside className={`fixed top-0 ${isRtl ? 'right-0 border-l' : 'left-0 border-r'} h-full bg-dark border-white/10 z-40 transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-16'}`}>
+          <aside className={`fixed top-0 h-full bg-dark border-white/10 z-40 transition-all duration-300 ${isRtl ? 'right-0 border-l' : 'left-0 border-r'} ${isMobile ? 'w-72' : sidebarOpen ? 'w-64' : 'w-16'} ${isMobile && !sidebarOpen ? (isRtl ? 'translate-x-full' : '-translate-x-full') : 'translate-x-0'}`}>
             <div className="flex items-center justify-between p-4 border-b border-white/10">
               {sidebarOpen && <div>
                 <div className="text-white font-bold text-sm">{t.adminPanel}</div>
@@ -266,10 +293,28 @@ export default function AdminLayout() {
             </div>
           </aside>
 
-          <div className={`transition-all duration-300 ${sidebarOpen ? (isRtl ? 'mr-64' : 'ml-64') : (isRtl ? 'mr-16' : 'ml-16')} min-h-screen`}>
-            <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between sticky top-0 z-30 shadow-sm">
-              <div className="text-sm text-gray-500">
-                {navItems.find(n => n.href === location.pathname)?.label || t.adminPanel}
+          {isMobile && sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/40 z-30 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
+        <div className={`transition-all duration-300 min-h-screen ${isMobile ? 'ml-0 mr-0' : sidebarOpen ? (isRtl ? 'mr-64' : 'ml-64') : (isRtl ? 'mr-16' : 'ml-16')}`}>
+            <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+              <div className="flex items-center gap-3">
+                {isMobile && (
+                  <button
+                    onClick={() => setSidebarOpen((open) => !open)}
+                    className="text-gray-600 hover:text-primary p-2 rounded-lg transition-colors"
+                    aria-label={isRtl ? 'قائمة التنقل' : 'Toggle sidebar'}
+                  >
+                    {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
+                  </button>
+                )}
+                <div className="text-sm text-gray-500">
+                  {navItems.find(n => n.href === location.pathname)?.label || t.adminPanel}
+                </div>
               </div>
               <div className="flex items-center gap-3 text-sm text-gray-600">
                 {isSuperAdmin && (
@@ -285,7 +330,7 @@ export default function AdminLayout() {
                 </div>
               </div>
             </div>
-            <div className="p-6"><Outlet /></div>
+            <div className="p-4 md:p-6"><Outlet /></div>
           </div>
         </div>
       </ConfirmContext.Provider>

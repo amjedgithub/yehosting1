@@ -110,7 +110,7 @@ heroSlides.forEach(({ image_url }) => {
 
   return (
     <main>
-      <section id="home-hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section id="home-hero" className="relative min-h-[86vh] flex items-center justify-center overflow-hidden py-8">
 
         {heroSlides.length > 0 ? heroSlides.map((img, i) => (
           <div
@@ -125,36 +125,36 @@ heroSlides.forEach(({ image_url }) => {
               className="w-full h-full object-cover"
               loading={i === 0 ? 'eager' : 'lazy'}
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-dark/85 via-dark/55 to-dark/90" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent" />
             {(img.caption_ar || img.caption_en) && (
               <div className={`absolute bottom-20 ${isRtl ? 'right-8' : 'left-8'} hidden md:block`}>
-                <p className="text-white/50 text-xs border-s-2 border-primary ps-3 italic">
-                  {isRtl ? img.caption_ar : img.caption_en}
-                </p>
-              </div>
+                  <p className="text-dark/60 text-xs border-s-2 border-primary ps-3 italic">
+                    {isRtl ? img.caption_ar : img.caption_en}
+                  </p>
+                </div>
             )}
           </div>
         )) : (
           <div className="absolute inset-0 hero-gradient" aria-hidden="true">
-            <div className="absolute inset-0 bg-gradient-to-b from-dark/85 via-dark/55 to-dark/90" />
+            <div className="absolute inset-0 bg-gradient-to-b from-white/95 via-white/90 to-white/95" />
           </div>
         )}
 
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-primary/5 blur-3xl pointer-events-none" />
 
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-5 leading-tight">
+          <h1 className="text-4xl md:text-6xl font-bold text-dark mb-5 leading-tight">
             {t.hero.title}
           </h1>
-          <p className="text-xl text-primary-light font-semibold mb-5">{t.hero.subtitle}</p>
-          <p className="text-gray-300 text-base md:text-lg mb-10 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-xl text-primary font-semibold mb-5">{t.hero.subtitle}</p>
+          <p className="text-gray-700 text-base md:text-lg mb-10 leading-relaxed max-w-2xl mx-auto">
             {t.hero.desc}
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link to="/about" className="btn-primary text-base shadow-lg shadow-primary/30">
               {t.hero.btn1}<Arrow size={18} />
             </Link>
-            <Link to="/contact" className="btn-outline border-white/40 text-white hover:border-primary text-base">
+            <Link to="/contact" className="btn-outline border-gray-200 text-dark hover:border-primary text-base">
               {t.hero.btn2}
             </Link>
           </div>
@@ -167,7 +167,7 @@ heroSlides.forEach(({ image_url }) => {
                 key={i}
                 onClick={() => setHeroIdx(i)}
                 aria-label={isRtl ? `انتقل إلى الشريحة ${i + 1}` : `Go to slide ${i + 1}`}
-                className={`h-2 rounded-full transition-all duration-300 ${i === heroIdx ? 'bg-primary w-8' : 'bg-white/30 w-2 hover:bg-white/60'}`}
+                className={`h-2 rounded-full transition-all duration-300 ${i === heroIdx ? 'bg-primary w-8' : 'bg-gray-300/60 w-2 hover:bg-gray-400/80'}`}
               />
             ))}
           </div>
