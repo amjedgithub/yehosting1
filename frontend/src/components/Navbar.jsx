@@ -138,7 +138,7 @@ export default function Navbar() {
         </div>
 
         {/* Main nav */}
-        <div className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="hidden md:block bg-white border-b border-gray-200 shadow-sm">
           <div className="w-full px-4 py-3">
             <div className="w-full flex flex-wrap items-center justify-between gap-3 bg-white rounded-[999px] border border-gray-200 px-4 py-2 shadow-sm">
               <div className="flex flex-wrap items-center justify-center gap-3 flex-1 min-w-[260px]">
@@ -208,7 +208,7 @@ export default function Navbar() {
       </nav>
       <div className="h-[68px] md:h-[96px]" aria-hidden="true" />
       {mobileOpen && (
-        <div className="xl:hidden bg-dark/98 backdrop-blur-md border-t border-white/10 px-4 pb-4 max-h-[80vh] overflow-y-auto">
+        <div className="xl:hidden bg-white border-t border-gray-200 px-4 pb-4 max-h-[80vh] overflow-y-auto shadow-xl">
           {[
             { label: t.nav.home, href: '/' },
             { label: t.nav.about, href: '/about' },
@@ -222,8 +222,8 @@ export default function Navbar() {
               key={item.href}
               to={item.href}
               className={[
-                'block py-3 border-b border-white/5 transition-colors',
-                isActiveQueryLink(item.href) ? 'text-primary font-semibold' : 'text-white/90 hover:text-primary',
+                'block py-3 border-b border-gray-200 transition-colors text-dark',
+                isActiveQueryLink(item.href) ? 'font-semibold text-primary' : 'hover:text-primary',
               ].join(' ')}
             >
               {item.label}

@@ -51,11 +51,21 @@ export default function Home() {
   const ChevronDir = isRtl ? ChevronLeft : ChevronRight
   const goals      = GOALS_DATA[lang] || GOALS_DATA.ar
 
+  const DEFAULT_HERO_SLIDE = {
+    id: 'default-hero',
+    image_url: '/default-hero.jpg',
+    caption_ar: 'قلعة القاهرة – تعز (اليمن)',
+    caption_en: 'Al-Qahira Castle - Taiz (Yemen)',
+    alt_ar: 'قلعة القاهرة – تعز (اليمن)',
+    alt_en: 'Al-Qahira Castle - Taiz (Yemen)',
+  }
+
+  const heroSlidesData = heroSlides.length > 0 ? heroSlides : [DEFAULT_HERO_SLIDE]
+
   const heroAlt = useMemo(() => {
-    const img = heroSlides[heroIdx]
-    if (!img) return ''
+    const img = heroSlidesData[heroIdx] || DEFAULT_HERO_SLIDE
     return isRtl ? (img.alt_ar || '') : (img.alt_en || '')
-  }, [heroIdx, isRtl, heroSlides])
+  }, [heroIdx, isRtl, heroSlidesData])
 
   useEffect(() => {
     let alive = true
@@ -73,6 +83,12 @@ export default function Home() {
     })
     return () => { alive = false }
   }, [])
+
+  useEffect(() => {
+    if (heroSlidesData.length <= 1) return
+    const timer = setInterval(() => setHeroIdx(i => (i + 1) % heroSlidesData.length), 6500)
+    return () => clearInterval(timer)
+  }, [heroSlidesData.length])
 
   useEffect(() => {
 heroSlides.forEach(({ image_url }) => {
@@ -112,7 +128,7 @@ heroSlides.forEach(({ image_url }) => {
     <main>
       <section id="home-hero" className="relative min-h-[86vh] flex items-center justify-center overflow-hidden py-8">
 
-        {heroSlides.length > 0 ? heroSlides.map((img, i) => (
+        {heroSlidesData.map((img, i) => (
           <div
             key={img.id || i}
             className={`absolute inset-0 ${i === heroIdx ? 'opacity-100' : 'opacity-0'}`}
@@ -125,36 +141,34 @@ heroSlides.forEach(({ image_url }) => {
               className="w-full h-full object-cover"
               loading={i === 0 ? 'eager' : 'lazy'}
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/55" />
             {(img.caption_ar || img.caption_en) && (
               <div className={`absolute bottom-20 ${isRtl ? 'right-8' : 'left-8'} hidden md:block`}>
-                  <p className="text-dark/60 text-xs border-s-2 border-primary ps-3 italic">
-                    {isRtl ? img.caption_ar : img.caption_en}
-                  </p>
-                </div>
+                <p className="text-white/80 text-xs border-s-2 border-primary ps-3 italic">
+                  {isRtl ? img.caption_ar : img.caption_en}
+                </p>
+              </div>
             )}
           </div>
-        )) : (
-          <div className="absolute inset-0 hero-gradient" aria-hidden="true">
-            <div className="absolute inset-0 bg-gradient-to-b from-white/95 via-white/90 to-white/95" />
-          </div>
-        )}
+        ))}
 
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-primary/5 blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-primary/10 blur-3xl pointer-events-none" />
 
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-6xl font-bold text-dark mb-5 leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-5 leading-tight drop-shadow-[0_20px_30px_rgba(0,0,0,0.45)]">
             {t.hero.title}
           </h1>
-          <p className="text-xl text-primary font-semibold mb-5">{t.hero.subtitle}</p>
-          <p className="text-gray-700 text-base md:text-lg mb-10 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-xl sm:text-2xl text-primary font-semibold mb-5 drop-shadow-[0_12px_20px_rgba(0,0,0,0.35)]">
+            {t.hero.subtitle}
+          </p>
+          <p className="text-white/85 text-base md:text-lg mb-10 leading-relaxed max-w-2xl mx-auto drop-shadow-[0_10px_20px_rgba(0,0,0,0.25)]">
             {t.hero.desc}
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link to="/about" className="btn-primary text-base shadow-lg shadow-primary/30">
               {t.hero.btn1}<Arrow size={18} />
             </Link>
-            <Link to="/contact" className="btn-outline border-gray-200 text-dark hover:border-primary text-base">
+            <Link to="/contact" className="inline-flex items-center justify-center border border-white/70 text-white hover:bg-white/10 text-base font-semibold py-3 px-6 rounded-xl transition-all duration-300 gap-2 shadow-sm">
               {t.hero.btn2}
             </Link>
           </div>
